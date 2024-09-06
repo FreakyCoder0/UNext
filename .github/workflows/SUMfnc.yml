@@ -1,0 +1,53 @@
+name: Sample Python Programs Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main  
+  workflow_dispatch:
+
+jobs:
+  checkout_and_run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Download add_two_numbers.py
+        run: |
+          curl -O https://raw.githubusercontent.com/jissdeodates/Sample-Python-Programs/master/add_two_numbers.py
+
+      - name: Run add_two_numbers.py
+        run: |
+          python3 add_two_numbers.py
+
+      - name: Update add_two_numbers.py (Example Modification)
+        run: |
+          echo "# Updated by GitHub Actions" >> add_two_numbers.py
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add add_two_numbers.py
+          git commit -m "Update add_two_numbers.py with new comment"
+          git push origin main
+
+  pull_results:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Pull Results
+        run: |
+          git fetch origin main
+          git checkout main
+          git pull origin main
+          cat add_two_numbers.py
+
+  manual_dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manual Dispatch
+        run: echo "This job was manually triggered"
